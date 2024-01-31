@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Function to generate random color code
+random_color() {
+    echo -e "\033[38;5;$((RANDOM % 256))m"
+}
+
+# Function to display "max" in all colors all over the screen
+display_max() {
+    columns=$(tput cols)
+    lines=$(tput lines)
+    
+    while true; do
+        for ((i = 0; i < 256; i++)); do
+            color_code=$(random_color)
+            row=$((RANDOM % lines + 1))
+            col=$((RANDOM % columns + 1))
+            tput cup $row $col
+            echo -n "${color_code}max${color_reset}"
+        done
+    done
+}
+
+# Trap Ctrl+C to clean up before exiting
+trap ctrl_c INT
+
+ctrl_c() {
+    tput cnorm  # Restore cursor
+    stty echo   # Restore echoing
+    exit 0
+}
+
+# Hide the cursor
+tput civis
+
+# Disable echoing to prevent interference with "max" input
+stty -echo
+
+# Reset color after displaying "max"
+color_reset=$(tput sgr0)
+
+# Run the display_max function
+display_max &
+
+# Wait for arrow keys or "max" to exit
+while true; do
+    read -s -n 1 key
+    case "$key" in
+        $'\e[A'|$'\e[B')  # Up or Down arrow key
+            ctrl_c
+            ;;
+        m)
+            read -s -n 1 second_key
+            if [ "$second_key" == "a" ] && [ "$key" == "m" ]; then
+                ctrl_c
+            fi
+            ;;
+    esac
+done
