@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Function to generate a random character from a given set
+random_char() {
+    chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()-=_+[]{}|;:'\",.<>/?"
+    echo -n "${chars:$((RANDOM % ${#chars})):1}"
+}
+
+# Function to set random color
+set_random_color() {
+    echo -n -e "\e[38;2;$((RANDOM % 256));$((RANDOM % 256));$((RANDOM % 256))m"
+}
+
+# Function to clear the screen
+clear_screen() {
+    echo -n -e "\e[2J"
+}
+
+# Function to move the cursor to a specific position
+move_cursor() {
+    local row=$1
+    local col=$2
+    echo -n -e "\e[${row};${col}H"
+}
+
+# Main loop
+while true; do
+    clear_screen
+
+    rows=$(tput lines)
+    cols=$(tput cols)
+
+    for ((i = 1; i <= rows; i++)); do
+        for ((j = 1; j <= cols; j++)); do
+            move_cursor $i $j
+            set_random_color
+            echo -n "$(random_char)"
+        done
+    done
+
+    sleep 0.05
+done
