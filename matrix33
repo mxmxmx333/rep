@@ -8,7 +8,7 @@ random_char() {
 
 # Function to set random color
 set_random_color() {
-    echo -n -e "\e[38;2;$((RANDOM % 256));$((RANDOM % 256));$((RANDOM % 256))m"
+    echo -n -e "\e[32m"  # Green color for traces
 }
 
 # Function to clear the screen
@@ -38,5 +38,13 @@ while true; do
         done
     done
 
-    sleep 0.05
+    # Add falling letters
+    for ((j = 1; j <= cols; j++)); do
+        move_cursor 1 $j
+        set_random_color
+        echo -n "$(random_char)"
+        sleep 0.05
+    done
+
+    sleep 0.1
 done
